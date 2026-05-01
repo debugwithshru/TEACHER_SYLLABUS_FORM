@@ -497,6 +497,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const totalSessionHours = parseFloat(formData.get('hours'));
+        const chaptersTotalHours = selectedChapters.reduce((sum, ch) => sum + (ch.hours || 0), 0);
+
+        if (totalSessionHours !== chaptersTotalHours) {
+            alert(`Validation Error: Total Session Hours (${totalSessionHours}) must match the sum of individual chapter hours (${chaptersTotalHours}).`);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Session Log';
+            return;
+        }
+
         // Collect Behavior Remarks
         const behaviorRemarks = [];
         document.querySelectorAll('.remark-row').forEach(row => {
