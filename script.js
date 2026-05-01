@@ -42,13 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
         "Electricity": "EL", "Magnetic Effects of Electric Current": "MEC",
         // Social Science
         "The Rise of Nationalism in Europe": "RNE", "Nationalism in India": "NI", "The Making of a Global World": "MGW", 
-        "The Age of Industrialization": "AI", "Print Culture and the Modern World": "PCM", 
+        "Print Culture and the Modern World": "PCM", 
         "Resources and Development": "RD", "Forest and Wildlife Resources": "FWR", "Water Resources": "WR", 
         "Agriculture": "AG", "Minerals and Energy Resources": "MER", "Manufacturing Industries": "MI", 
         "Lifelines of National Economy": "LNE", "Power Sharing": "PS", "Federalism": "FD", 
         "Gender, Religion, and Caste": "GRC", "Political Parties": "PP", "Outcomes of Democracy": "OD",
         "Development": "DV", "Sectors of the Indian Economy": "SIE", "Money and Credit": "MC", 
-        "Globalization and the Indian Economy": "GIE", "Consumer Rights": "CRG",
+        "Globalization and the Indian Economy": "GIE",
         // English
         "A Letter to God": "ALG", "Nelson Mandela: Long Walk to Freedom": "NM", "Two Stories about Flying": "TSF",
         "From the Diary of Anne Frank": "DAF", "Glimpses of India": "GI", "Mijbil the Otter": "MO",
@@ -74,10 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
         "Biology": ["Life Processes", "Control and Coordination", "How do Organisms Reproduce", "Heredity and Evolution", "Our Environment"],
         "Physics": ["Light - Reflection and Refraction", "The Human Eye and the Colourful World", "Electricity", "Magnetic Effects of Electric Current"],
         // Social Science sub-subjects
-        "History": ["The Rise of Nationalism in Europe", "Nationalism in India", "The Making of a Global World", "The Age of Industrialization", "Print Culture and the Modern World"],
+        "History": ["The Rise of Nationalism in Europe", "Nationalism in India", "The Making of a Global World", "Print Culture and the Modern World"],
         "Geography": ["Resources and Development", "Forest and Wildlife Resources", "Water Resources", "Agriculture", "Minerals and Energy Resources", "Manufacturing Industries", "Lifelines of National Economy"],
         "Political Science": ["Power Sharing", "Federalism", "Gender, Religion, and Caste", "Political Parties", "Outcomes of Democracy"],
-        "Economics": ["Development", "Sectors of the Indian Economy", "Money and Credit", "Globalization and the Indian Economy", "Consumer Rights"],
+        "Economics": ["Development", "Sectors of the Indian Economy", "Money and Credit", "Globalization and the Indian Economy"],
         // English
         "English": [
             "A Letter to God", "Nelson Mandela: Long Walk to Freedom", "Two Stories about Flying",
