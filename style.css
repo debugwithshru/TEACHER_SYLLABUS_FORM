@@ -437,6 +437,85 @@ input:checked + .slider:before {
     color: #ffeaea;
 }
 
+/* Chapter Multi-Select Chips */
+.chapter-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.chapter-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #edf7ed;
+    border: 1px solid #c8e6c9;
+    padding: 8px 12px;
+    border-radius: 8px;
+    animation: chipIn 0.2s ease;
+}
+
+.chapter-chip-name {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.chapter-chip-code {
+    font-size: 0.75rem;
+    background: var(--accent-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.chapter-hours-input {
+    width: 65px !important;
+    padding: 6px 8px !important;
+    font-size: 0.85rem !important;
+    text-align: center;
+    border: 1.5px solid #dfe6e9;
+    border-radius: 6px;
+}
+
+.chapter-chip .remove-chip {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--error-color);
+    font-size: 1.1rem;
+}
+
+/* Manual Chapter Entry Row */
+.manual-chapter-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.manual-chapter-row input {
+    flex: 1;
+}
+
+.add-chapter-btn {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.add-chapter-btn:hover {
+    background: #00a884;
+}
+
 /* Buttons */
 .form-actions {
     margin-top: 10px;

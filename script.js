@@ -197,11 +197,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI: CASCADING SUBJECT → CHAPTER
     // =========================================================================
     const subjectSelect = document.getElementById('subject');
-    const chapterSelect = document.getElementById('chapter');
+    const chapterSearch = document.getElementById('chapter_search');
+    const chapterResults = document.getElementById('chapter_search_results');
     const chapterManual = document.getElementById('chapter_manual');
+    const manualChapterRow = document.getElementById('manualChapterRow');
+    const chapterChipsEl = document.getElementById('chapter_chips');
     const gradeRadios = document.getElementsByName('grade');
     const parentSubjectRow = document.getElementById('parentSubjectRow');
     const parentSubjectDisplay = document.getElementById('parentSubjectDisplay');
+    let selectedChapters = []; // [{name, code, hours}]
 
     subjectSelect.addEventListener('change', () => {
         const subject = subjectSelect.value;
@@ -212,31 +216,25 @@ document.addEventListener('DOMContentLoaded', () => {
         parentSubjectDisplay.textContent = parentSubject;
         parentSubjectRow.style.display = 'flex';
 
-        // Populate chapters
-        chapterSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
-        chapterSelect.disabled = false;
-        
+        // Reset chapter selections
+        selectedChapters = [];
+        chapterChipsEl.innerHTML = '';
+
         const isLanguage = ["Hindi", "Marathi", "Sanskrit"].includes(subject);
 
         if (grade === '10th' && SYLLABUS_10TH[subject] && !isLanguage) {
-            chapterSelect.style.display = 'block';
-            chapterManual.style.display = 'none';
-            chapterManual.required = false;
-            chapterSelect.required = true;
-
-            SYLLABUS_10TH[subject].forEach(ch => {
-                const opt = document.createElement('option');
-                opt.value = ch;
-                opt.textContent = ch;
-                chapterSelect.appendChild(opt);
-            });
+            // Show searchable chapter dropdown
+            chapterSearch.style.display = 'block';
+            chapterSearch.disabled = false;
+            chapterSearch.placeholder = 'Search or select chapter...';
+            chapterSearch.value = '';
+            manualChapterRow.style.display = 'none';
         } else {
             // 9th grade or Languages — show manual entry
-            chapterSelect.style.display = 'none';
-            chapterSelect.required = false;
-            chapterManual.style.display = 'block';
-            chapterManual.required = true;
-            chapterManual.value = ''; // clear previous
+            chapterSearch.style.display = 'none';
+            chapterResults.classList.remove('active');
+            manualChapterRow.style.display = 'flex';
+            chapterManual.value = '';
         }
     });
 
@@ -246,6 +244,90 @@ document.addEventListener('DOMContentLoaded', () => {
             subjectSelect.dispatchEvent(new Event('change'));
         }
     }));
+
+    // =========================================================================
+    // UI: MULTI-SELECT CHAPTER LOGIC
+    // =========================================================================
+    function populateChapterDropdown(chapters) {
+        chapterResults.innerHTML = '';
+        chapters.forEach(ch => {
+            const code = CHAPTER_CODES[ch] || 'MANUAL';
+            const div = document.createElement('div');
+            div.className = 'dropdown-item';
+            div.innerHTML = `${ch} <span style="color:#00b894;font-size:0.8rem;margin-left:4px;">(${code})</span>`;
+            div.onclick = () => {
+                addChapterChip(ch, code);
+                chapterSearch.value = '';
+                chapterResults.classList.remove('active');
+            };
+            chapterResults.appendChild(div);
+        });
+    }
+
+    chapterSearch.addEventListener('focus', () => {
+        const subject = subjectSelect.value;
+        const grade = document.querySelector('input[name="grade"]:checked')?.value;
+        if (grade === '10th' && SYLLABUS_10TH[subject]) {
+            const available = SYLLABUS_10TH[subject].filter(ch => !selectedChapters.find(s => s.name === ch));
+            populateChapterDropdown(available);
+            chapterResults.classList.add('active');
+        }
+    });
+
+    chapterSearch.addEventListener('input', () => {
+        const query = chapterSearch.value.toLowerCase().trim();
+        const subject = subjectSelect.value;
+        const grade = document.querySelector('input[name="grade"]:checked')?.value;
+        if (!query) { chapterResults.classList.remove('active'); return; }
+        if (grade === '10th' && SYLLABUS_10TH[subject]) {
+            const available = SYLLABUS_10TH[subject]
+                .filter(ch => !selectedChapters.find(s => s.name === ch))
+                .filter(ch => ch.toLowerCase().includes(query) || (CHAPTER_CODES[ch] || '').toLowerCase().includes(query));
+            populateChapterDropdown(available);
+            chapterResults.classList.add('active');
+        }
+    });
+
+    // Manual chapter entry (9th grade / Languages)
+    chapterManual.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const name = chapterManual.value.trim();
+            if (name) { addChapterChip(name, 'MANUAL'); chapterManual.value = ''; }
+        }
+    });
+    document.getElementById('addManualChapterBtn').addEventListener('click', () => {
+        const name = chapterManual.value.trim();
+        if (name) { addChapterChip(name, 'MANUAL'); chapterManual.value = ''; }
+    });
+
+    function addChapterChip(name, code) {
+        if (selectedChapters.find(c => c.name === name)) return;
+        selectedChapters.push({ name, code, hours: '' });
+        renderChapterChips();
+    }
+
+    function renderChapterChips() {
+        chapterChipsEl.innerHTML = '';
+        selectedChapters.forEach((ch, idx) => {
+            const chip = document.createElement('div');
+            chip.className = 'chapter-chip';
+            chip.innerHTML = `
+                <span class="chapter-chip-name">${ch.name}</span>
+                <span class="chapter-chip-code">${ch.code}</span>
+                <input type="number" class="chapter-hours-input" min="0.5" step="0.5" placeholder="Hrs" value="${ch.hours || ''}">
+                <span class="remove-chip">&times;</span>
+            `;
+            chip.querySelector('.chapter-hours-input').addEventListener('input', (e) => {
+                selectedChapters[idx].hours = parseFloat(e.target.value) || 0;
+            });
+            chip.querySelector('.remove-chip').addEventListener('click', () => {
+                selectedChapters = selectedChapters.filter(c => c.name !== ch.name);
+                renderChapterChips();
+            });
+            chapterChipsEl.appendChild(chip);
+        });
+    }
 
     // =========================================================================
     // UI: TOGGLE SWITCHES (Homework / Personal HW)
@@ -407,19 +489,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedSubject = formData.get('subject');        // What teacher selected (e.g., "Algebra")
         const parentSubject = SUBJECT_TO_PARENT[selectedSubject] || selectedSubject;  // Auto-derived (e.g., "Mathematics")
 
-        // Handle Chapter & Code
-        const grade = formData.get('grade');
-        const isLanguage = ["Hindi", "Marathi", "Sanskrit"].includes(selectedSubject);
-        
-        let finalChapterName = '';
-        let finalChapterCode = '';
-
-        if (grade === '9th' || isLanguage) {
-            finalChapterName = formData.get('chapter_manual');
-            finalChapterCode = 'MANUAL';
-        } else {
-            finalChapterName = formData.get('chapter');
-            finalChapterCode = CHAPTER_CODES[finalChapterName] || 'UNKNOWN';
+        // Validate chapters
+        if (selectedChapters.length === 0) {
+            alert('Please select at least one chapter.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Session Log';
+            return;
         }
 
         // Collect Behavior Remarks
@@ -447,11 +522,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 branch: 'A',  // Hardcoded
                 grade: formData.get('grade'),
                 batch: formData.get('batch'),
-                subject: parentSubject,         // "Mathematics", "Science", etc.
-                sub_subject: selectedSubject,    // "Algebra", "Physics", etc. (what teacher sees)
-                chapter_name: finalChapterName,
-                chapter_code: finalChapterCode,
+                subject: parentSubject,
+                sub_subject: selectedSubject,
                 hours_this_session: parseFloat(formData.get('hours')),
+                chapters: selectedChapters.map(ch => ({
+                    chapter_name: ch.name,
+                    chapter_code: ch.code,
+                    hours: ch.hours || 0
+                })),
                 topics_covered: formData.get('topics')
             },
             // --- HOMEWORK LOG ---

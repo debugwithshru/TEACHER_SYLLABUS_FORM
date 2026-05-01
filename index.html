@@ -111,12 +111,17 @@
                         </select>
                     </div>
 
-                    <div class="input-group">
-                        <label for="chapter">Chapter <span class="required">*</span></label>
-                        <select id="chapter" name="chapter" required disabled>
-                            <option value="" disabled selected>Select Subject first</option>
-                        </select>
-                        <input type="text" id="chapter_manual" name="chapter_manual" placeholder="Enter chapter name manually..." style="display: none;">
+                    <div class="input-group" id="chapterGroup">
+                        <label>Chapter(s) <span class="required">*</span></label>
+                        <div class="searchable-dropdown" id="chapterDropdownWrapper">
+                            <input type="text" id="chapter_search" class="chapter-search-input" placeholder="Select subject first..." autocomplete="off" disabled>
+                            <div class="dropdown-list" id="chapter_search_results"></div>
+                        </div>
+                        <div class="manual-chapter-row" id="manualChapterRow" style="display: none;">
+                            <input type="text" id="chapter_manual" placeholder="Type chapter name..." autocomplete="off">
+                            <button type="button" class="add-chapter-btn" id="addManualChapterBtn">+</button>
+                        </div>
+                        <div class="chapter-chips" id="chapter_chips"></div>
                     </div>
                 </div>
 
