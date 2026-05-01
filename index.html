@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher's Lecture & Behavior Log - Cocoon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-container">
+        <header>
+            <img src="cocoon_logo.webp" alt="Cocoon Logo" class="logo">
+            <h1 class="brand-name">COCOON</h1>
+            <h2 class="form-title">Lecture & Behavior Log</h2>
+            <p class="form-subtitle">Record daily teaching, homework, and student feedback</p>
+        </header>
+
+        <form id="syllabusForm">
+            <!-- Section 1: Lecture Information -->
+            <section>
+                <div class="section-title">1. Lecture Information</div>
+                
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label for="date">Date <span class="required">*</span></label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="teacher">Teacher Name <span class="required">*</span></label>
+                        <select id="teacher" name="teacher" required>
+                            <option value="" disabled selected>Select Teacher</option>
+                            <option value="Suraj Sir">Suraj Sir</option>
+                            <option value="Ranjeet Sir">Ranjeet Sir</option>
+                            <option value="Dipti Ma'am">Dipti Ma'am</option>
+                            <option value="Rachna Ma'am">Rachna Ma'am</option>
+                            <option value="Trupti Ma'am">Trupti Ma'am</option>
+                            <option value="Prasad Sir">Prasad Sir</option>
+                            <option value="Mana Ma'am">Mana Ma'am</option>
+                            <option value="Dr. Monish">Dr. Monish</option>
+                            <option value="Ayaan Sir">Ayaan Sir</option>
+                            <option value="Deepa Ma'am">Deepa Ma'am</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label>Grade <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="grade" value="9th" required> 9th</label>
+                            <label class="radio-label"><input type="radio" name="grade" value="10th"> 10th</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Batch <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="batch" value="A" required> Batch A</label>
+                            <label class="radio-label"><input type="radio" name="batch" value="B"> Batch B</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label for="hours">Hours this Session <span class="required">*</span></label>
+                        <input type="number" id="hours" name="hours" min="0.5" step="0.5" placeholder="e.g., 1.5" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Syllabus Details -->
+            <section>
+                <div class="section-title">2. Syllabus Details</div>
+                
+                <div class="grid-row">
+                    <div class="input-group">
+                        <label for="subject">Subject <span class="required">*</span></label>
+                        <select id="subject" name="subject" required>
+                            <option value="" disabled selected>Select Subject</option>
+                            <!-- Mathematics -->
+                            <optgroup label="Mathematics">
+                                <option value="Algebra">Algebra</option>
+                                <option value="Geometry">Geometry</option>
+                            </optgroup>
+                            <!-- Science -->
+                            <optgroup label="Science">
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Biology">Biology</option>
+                            </optgroup>
+                            <!-- Social Science -->
+                            <optgroup label="Social Science">
+                                <option value="History">History</option>
+                                <option value="Geography">Geography</option>
+                                <option value="Political Science">Political Science</option>
+                                <option value="Economics">Economics</option>
+                            </optgroup>
+                            <!-- English -->
+                            <optgroup label="English">
+                                <option value="English">English</option>
+                            </optgroup>
+                            <!-- Languages -->
+                            <optgroup label="Languages">
+                                <option value="Hindi">Hindi</option>
+                                <option value="Marathi">Marathi</option>
+                                <option value="Sanskrit">Sanskrit</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="chapter">Chapter <span class="required">*</span></label>
+                        <select id="chapter" name="chapter" required disabled>
+                            <option value="" disabled selected>Select Subject first</option>
+                        </select>
+                        <input type="text" id="chapter_manual" name="chapter_manual" placeholder="Enter chapter name manually..." style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Auto-derived parent subject (read-only display) -->
+                <div class="auto-fill-row" id="parentSubjectRow" style="display: none;">
+                    <span class="auto-fill-label">📚 Parent Subject:</span>
+                    <span class="auto-fill-value" id="parentSubjectDisplay"></span>
+                </div>
+
+                <div class="input-group" style="margin-top: 15px;">
+                    <label for="topics">Topics Covered <span class="required">*</span></label>
+                    <textarea id="topics" name="topics" rows="3" required placeholder="Detail the concepts discussed during this session..."></textarea>
+                </div>
+            </section>
+
+            <!-- Section 3: Homework assignments -->
+            <section class="collapsible-section" id="hw_section_wrapper">
+                <div class="section-title collapsible-header" onclick="toggleSection('hw_section_wrapper')">
+                    3. Homework Assignments
+                    <span class="collapse-icon">⌄</span>
+                </div>
+                
+                <div class="collapsible-content">
+                    <div class="toggle-container">
+                    <span class="toggle-label">Assign Regular Homework?</span>
+                    <label class="switch">
+                        <input type="checkbox" id="hw_toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div id="hw_section" class="dynamic-section">
+                    <div class="input-group">
+                        <label for="hw_desc">Homework Description</label>
+                        <textarea id="hw_desc" name="hw_desc" rows="2" placeholder="e.g. Solve Ex 3.4 Q1-Q10"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="hw_date">Due Date</label>
+                        <input type="date" id="hw_date" name="hw_date">
+                    </div>
+
+                    <div class="toggle-container" style="margin-top: 15px;">
+                        <span class="toggle-label">Personalized Homework? (Selected Students)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="personal_hw_toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div id="personal_hw_section" class="dynamic-section">
+                        <div class="searchable-dropdown" id="hwStudentDropdown">
+                            <input type="text" id="hw_student_search" class="student-search-input" placeholder="Search Roll No | Name..." autocomplete="off">
+                            <div class="dropdown-list" id="hw_search_results"></div>
+                        </div>
+                        <div class="student-chips" id="hw_student_chips">
+                            <!-- Chips for selected students will appear here -->
+                        </div>
+                    </div>
+                </div>
+                </div> <!-- End Collapsible Content -->
+            </section>
+
+            <!-- Section 4: Student Remarks / Behavior -->
+            <section class="collapsible-section" id="remarks_section_wrapper">
+                <div class="section-title collapsible-header" onclick="toggleSection('remarks_section_wrapper')">
+                    4. Student Remarks (Behavior Sheet)
+                    <span class="collapse-icon">⌄</span>
+                </div>
+                <div class="collapsible-content">
+                    <p class="section-hint">Add behavioral flags or individual remarks for students. Optional — leave empty if none.</p>
+                
+                <div id="remarks_container">
+                    <!-- Remarks will be added here dynamically -->
+                </div>
+
+                <button type="button" class="secondary-btn" id="addRemarkBtn">+ Add Student Remark</button>
+                </div> <!-- End Collapsible Content -->
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Session Log</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Templates -->
+    <template id="remarkTemplate">
+        <div class="remark-row">
+            <div class="remark-header">
+                <span class="remark-title">Student Remark</span>
+                <button type="button" class="remove-btn">&times;</button>
+            </div>
+            <div class="searchable-dropdown student-remark-search">
+                <input type="text" class="student-search-input" placeholder="Search Roll No | Name..." autocomplete="off">
+                <div class="dropdown-list"></div>
+                <input type="hidden" class="student-id-hidden">
+                <input type="hidden" class="student-name-hidden">
+            </div>
+            <div class="grid-row" style="margin-top: 10px;">
+                <div class="input-group">
+                    <label class="field-label-sm">Flag Type</label>
+                    <select class="flag-type">
+                        <option value="Neutral" selected>Neutral</option>
+                        <option value="Positive">Positive</option>
+                        <option value="Needs attention">Needs attention</option>
+                        <option value="Parent to be informed">Parent to be informed</option>
+                    </select>
+                </div>
+                <div class="input-group" style="flex: 2;">
+                    <label class="field-label-sm">Remark</label>
+                    <textarea class="student-remark-text" rows="2" placeholder="Enter behavior remark..."></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h2>Log Saved Successfully!</h2>
+            <p>Your session details and remarks have been recorded.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
