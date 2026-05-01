@@ -530,6 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     chapter_code: ch.code,
                     hours: ch.hours || 0
                 })),
+                chapter_code_string: selectedChapters.map(ch => ch.code).join(', '),
+                chapter_name_string: selectedChapters.map(ch => ch.name).join(', '),
                 topics_covered: formData.get('topics')
             },
             // --- HOMEWORK LOG ---
