@@ -101,11 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Hardcode column indices based on user's exact sheet structure
-            // 0: Student_ID, 1: First_Name, 2: Last_Name, ..., 6: Grade
+            // 0: Student_ID, 1: First_Name, 2: Last_Name, ..., 6: Grade, 7: Batch
             const idIdx = 0;
             const firstIdx = 1;
             const lastIdx = 2;
             const gradeIdx = 6;
+            const batchIdx = 7;
 
             const rows = data.table.rows;
             allStudents = rows.map(row => {
@@ -118,13 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const firstName = (c[firstIdx] && c[firstIdx].v) ? String(c[firstIdx].v).trim() : '';
                 const lastName = (c[lastIdx] && c[lastIdx].v) ? String(c[lastIdx].v).trim() : '';
                 const grade = (c[gradeIdx] && c[gradeIdx].v) ? String(c[gradeIdx].v).trim() : '';
+                const batch = (c[batchIdx] && c[batchIdx].v) ? String(c[batchIdx].v).trim() : '';
 
                 return {
                     id: sid,
                     firstName: firstName,
                     lastName: lastName,
                     fullName: `${firstName} ${lastName}`.trim() || 'No Name',
-                    grade: grade
+                    grade: grade,
+                    batch: batch
                 };
             }).filter(s => s !== null);
 
@@ -135,20 +138,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // Helper: Filter students based on selected Grade (Not filtering by batch currently)
+    // Helper: Filter students based on selected Grade AND Batch
     // =========================================================================
     function getFilteredStudents() {
         const grade = document.querySelector('input[name="grade"]:checked')?.value;
-        // Batch filtering disabled for now as per user request
-        // const batch = document.querySelector('input[name="batch"]:checked')?.value;
+        const batchCheckboxes = Array.from(document.querySelectorAll('input[name="batch"]:checked')).map(cb => cb.value);
 
-        if (!grade) return [];
+        if (!grade || batchCheckboxes.length === 0) return [];
 
         return allStudents.filter(s => {
-            // Strict filtering by grade. 
-            // Replace removes 'th' to match "10th" with "10" just in case.
-            if (!s.grade) return false; // Don't show students without a grade
-            return s.grade.toLowerCase().includes(grade.replace('th', '').toLowerCase());
+            if (!s.grade || !s.batch) return false;
+            
+            // Strict filtering by grade
+            const matchesGrade = s.grade.toLowerCase().includes(grade.replace('th', '').toLowerCase());
+            
+            // Filtering by batch (can match any of the selected batches)
+            const matchesBatch = batchCheckboxes.includes(s.batch.toUpperCase());
+            
+            return matchesGrade && matchesBatch;
         });
     }
 
@@ -176,15 +183,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI: CASCADING SUBJECT → CHAPTER
     // =========================================================================
     const subjectSelect = document.getElementById('subject');
+    const teacherSelect = document.getElementById('teacher');
     const chapterSearch = document.getElementById('chapter_search');
     const chapterResults = document.getElementById('chapter_search_results');
     const chapterManual = document.getElementById('chapter_manual');
     const manualChapterRow = document.getElementById('manualChapterRow');
     const chapterChipsEl = document.getElementById('chapter_chips');
     const gradeRadios = document.getElementsByName('grade');
+    const batchCheckboxes = document.querySelectorAll('input[name="batch"]');
     const parentSubjectRow = document.getElementById('parentSubjectRow');
     const parentSubjectDisplay = document.getElementById('parentSubjectDisplay');
     let selectedChapters = []; // [{name, code, hours}]
+
+    // Auto-select batches for specific language teachers
+    teacherSelect.addEventListener('change', () => {
+        const teacher = teacherSelect.value;
+        const autoSelectTeachers = ["Rachna Ma'am", "Dipti Ma'am", "Trupti Ma'am"];
+        
+        if (autoSelectTeachers.includes(teacher)) {
+            batchCheckboxes.forEach(cb => cb.checked = true);
+        } else {
+            batchCheckboxes.forEach(cb => cb.checked = false);
+        }
+    });
 
     subjectSelect.addEventListener('change', () => {
         const subject = subjectSelect.value;
@@ -349,9 +370,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addRemarkBtn.addEventListener('click', () => {
         const grade = document.querySelector('input[name="grade"]:checked')?.value;
-        const batch = document.querySelector('input[name="batch"]:checked')?.value;
-        if (!grade || !batch) {
-            alert('Please select Grade and Batch first.');
+        const batchSelected = Array.from(document.querySelectorAll('input[name="batch"]:checked')).length > 0;
+        
+        if (!grade || !batchSelected) {
+            alert('Please select Grade and at least one Batch first.');
             return;
         }
 
@@ -483,6 +505,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedSubject = formData.get('subject');        // What teacher selected (e.g., "Algebra")
         const parentSubject = SUBJECT_TO_PARENT[selectedSubject] || selectedSubject;  // Auto-derived (e.g., "Mathematics")
 
+        // Validate batches
+        const selectedBatches = Array.from(document.querySelectorAll('input[name="batch"]:checked')).map(cb => cb.value);
+        if (selectedBatches.length === 0) {
+            alert('Please select at least one Batch.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Session Log';
+            return;
+        }
+
         // Validate chapters
         if (selectedChapters.length === 0) {
             alert('Please select at least one chapter.');
@@ -525,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 teacher_name: formData.get('teacher'),
                 branch: 'A',  // Hardcoded
                 grade: formData.get('grade'),
-                batch: formData.get('batch'),
+                batch: selectedBatches.join(', '),
                 subject: parentSubject,
                 sub_subject: selectedSubject,
                 hours_this_session: parseFloat(formData.get('hours')),
