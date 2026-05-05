@@ -25,73 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // =========================================================================
-    // CHAPTER CODES MAPPING
+    // DYNAMIC CHAPTERS LOADED BELOW
     // =========================================================================
-    const CHAPTER_CODES = {
-        // Mathematics
-        "Real Numbers": "RN", "Polynomials": "PL", "Pair of Linear Equations in Two Variables": "PLE", 
-        "Quadratic Equations": "QE", "Arithmetic Progressions": "AP", "Coordinate Geometry": "CG", 
-        "Triangles": "TR", "Circles": "CR", "Introduction to Trigonometry": "TG", 
-        "Trigonometric Identities": "TGI", "Heights and Distances": "ATG", "Areas Related to Circles": "ARC", 
-        "Surface Areas and Volumes": "SAV", "Statistics": "ST", "Probability": "PB",
-        // Science
-        "Chemical Reactions and Equations": "CRE", "Acids, Bases, and Salts": "ABS", "Metals and Non-metals": "MNM", 
-        "Carbon and Its Compounds": "CIC", "Life Processes": "LP", "Control and Coordination": "CAC", 
-        "How do Organisms Reproduce": "HOR", "Heredity and Evolution": "HE", "Our Environment": "OE",
-        "Light - Reflection and Refraction": "LRR", "The Human Eye and the Colourful World": "HEC", 
-        "Electricity": "EL", "Magnetic Effects of Electric Current": "MEC",
-        // Social Science
-        "The Rise of Nationalism in Europe": "RNE", "Nationalism in India": "NI", "The Making of a Global World": "MGW", 
-        "Print Culture and the Modern World": "PCM", 
-        "Resources and Development": "RD", "Forest and Wildlife Resources": "FWR", "Water Resources": "WR", 
-        "Agriculture": "AG", "Minerals and Energy Resources": "MER", "Manufacturing Industries": "MI", 
-        "Lifelines of National Economy": "LNE", "Power Sharing": "PS", "Federalism": "FD", 
-        "Gender, Religion, and Caste": "GRC", "Political Parties": "PP", "Outcomes of Democracy": "OD",
-        "Development": "DV", "Sectors of the Indian Economy": "SIE", "Money and Credit": "MC", 
-        "Globalization and the Indian Economy": "GIE",
-        // English
-        "A Letter to God": "ALG", "Nelson Mandela: Long Walk to Freedom": "NM", "Two Stories about Flying": "TSF",
-        "From the Diary of Anne Frank": "DAF", "Glimpses of India": "GI", "Mijbil the Otter": "MO",
-        "Madam Rides the Bus": "MRB", "The Sermon at Benares": "SB", "The Proposal": "TP",
-        "Dust of Snow": "DOS", "Fire and Ice": "FAI", "A Tiger in the Zoo": "TIZ", "How to Tell Wild Animals": "HWA",
-        "The Ball Poem": "TBP", "Amanda!": "AM", "The Trees": "TT",
-        "The Tale of Custard the Dragon": "TCD", "For Anne Gregory": "FAG",
-        "A Triumph of Surgery": "TOS", "The Thief's Story": "TTS", "The Midnight Visitor": "TMV",
-        "A Question of Trust": "AQT", "Footprints Without Feet": "FWF", "The Making of a Scientist": "TMS",
-        "The Necklace": "TN", "Bholi": "BH", "The Book That Saved the Earth": "BSE",
-        "Reading Comprehension": "RC", "Grammar": "GR", "Creative Writing Skills": "CWS"
-    };
-
-    // =========================================================================
-    // 10TH GRADE SYLLABUS — Chapters per Subject (what teacher sees as "Subject")
-    // =========================================================================
-    const SYLLABUS_10TH = {
-        // Mathematics sub-subjects
-        "Algebra": ["Real Numbers", "Polynomials", "Pair of Linear Equations in Two Variables", "Quadratic Equations", "Arithmetic Progressions"],
-        "Geometry": ["Coordinate Geometry", "Triangles", "Circles", "Introduction to Trigonometry", "Trigonometric Identities", "Heights and Distances", "Areas Related to Circles", "Surface Areas and Volumes", "Statistics", "Probability"],
-        // Science sub-subjects
-        "Chemistry": ["Chemical Reactions and Equations", "Acids, Bases, and Salts", "Metals and Non-metals", "Carbon and Its Compounds"],
-        "Biology": ["Life Processes", "Control and Coordination", "How do Organisms Reproduce", "Heredity and Evolution", "Our Environment"],
-        "Physics": ["Light - Reflection and Refraction", "The Human Eye and the Colourful World", "Electricity", "Magnetic Effects of Electric Current"],
-        // Social Science sub-subjects
-        "History": ["The Rise of Nationalism in Europe", "Nationalism in India", "The Making of a Global World", "Print Culture and the Modern World"],
-        "Geography": ["Resources and Development", "Forest and Wildlife Resources", "Water Resources", "Agriculture", "Minerals and Energy Resources", "Manufacturing Industries", "Lifelines of National Economy"],
-        "Political Science": ["Power Sharing", "Federalism", "Gender, Religion, and Caste", "Political Parties", "Outcomes of Democracy"],
-        "Economics": ["Development", "Sectors of the Indian Economy", "Money and Credit", "Globalization and the Indian Economy"],
-        // English
-        "English": [
-            "A Letter to God", "Nelson Mandela: Long Walk to Freedom", "Two Stories about Flying",
-            "From the Diary of Anne Frank", "Glimpses of India", "Mijbil the Otter",
-            "Madam Rides the Bus", "The Sermon at Benares", "The Proposal",
-            "Dust of Snow", "Fire and Ice", "A Tiger in the Zoo", "How to Tell Wild Animals",
-            "The Ball Poem", "Amanda!", "The Trees",
-            "The Tale of Custard the Dragon", "For Anne Gregory",
-            "A Triumph of Surgery", "The Thief's Story", "The Midnight Visitor",
-            "A Question of Trust", "Footprints Without Feet", "The Making of a Scientist",
-            "The Necklace", "Bholi", "The Book That Saved the Earth",
-            "Reading Comprehension", "Grammar", "Creative Writing Skills"
-        ]
-    };
 
     // =========================================================================
     // STUDENT DATA — Fetch from Google Sheets via JSONP
@@ -99,14 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // NOTE: Grade & Batch columns may or may not exist yet. We load what we can.
     // =========================================================================
     const SHEET_ID = '16JAViFIXgf0oDqC5Nl0V6UpGqKrUVGAHkoEeYw1LdGs';
-    const GID = '91172728';
+    const GID_STUDENTS = '91172728';
+    const GID_CHAPTERS = '1066495436';
     let allStudents = [];
+    let allChapters = [];
 
-    async function fetchStudents() {
+    async function fetchChapters() {
         try {
             const data = await new Promise((resolve, reject) => {
                 const script = document.createElement('script');
-                const cbName = 'gvizCallback_' + Math.floor(Math.random() * 100000);
+                const cbName = 'gvizCallbackCh_' + Math.floor(Math.random() * 100000);
                 window[cbName] = (jsonData) => {
                     delete window[cbName];
                     script.remove();
@@ -115,9 +52,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 script.onerror = () => {
                     delete window[cbName];
                     script.remove();
-                    reject(new Error('Failed to load Google Sheet'));
+                    reject(new Error('Failed to load Google Sheet Chapters'));
                 };
-                script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cbName}&gid=${GID}`;
+                script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cbName}&gid=${GID_CHAPTERS}`;
+                document.body.appendChild(script);
+            });
+
+            const gradeIdx = 2;
+            const subSubjectIdx = 4;
+            const codeIdx = 6;
+            const nameIdx = 7;
+
+            const rows = data.table.rows;
+            allChapters = rows.map(row => {
+                const c = row.c;
+                if (!c || !c[nameIdx] || !c[nameIdx].v) return null;
+                return {
+                    grade: (c[gradeIdx] && c[gradeIdx].v) ? String(c[gradeIdx].v).trim() : '',
+                    subSubject: (c[subSubjectIdx] && c[subSubjectIdx].v) ? String(c[subSubjectIdx].v).trim() : '',
+                    code: (c[codeIdx] && c[codeIdx].v) ? String(c[codeIdx].v).trim() : 'MANUAL',
+                    name: String(c[nameIdx].v).trim()
+                };
+            }).filter(ch => ch !== null && !ch.name.toLowerCase().includes('chapter_name') && ch.name !== '');
+            
+            console.log(`Chapters loaded: ${allChapters.length}`);
+        } catch (error) {
+            console.error('Chapter fetch error:', error);
+        }
+    }
+
+    async function fetchStudents() {
+        try {
+            const data = await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                const cbName = 'gvizCallbackSt_' + Math.floor(Math.random() * 100000);
+                window[cbName] = (jsonData) => {
+                    delete window[cbName];
+                    script.remove();
+                    resolve(jsonData);
+                };
+                script.onerror = () => {
+                    delete window[cbName];
+                    script.remove();
+                    reject(new Error('Failed to load Google Sheet Students'));
+                };
+                script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cbName}&gid=${GID_STUDENTS}`;
                 document.body.appendChild(script);
             });
 
@@ -222,7 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const isLanguage = ["Hindi", "Marathi", "Sanskrit"].includes(subject);
 
-        if (grade === '10th' && SYLLABUS_10TH[subject] && !isLanguage) {
+        // Filter chapters dynamically based on Grade and Sub_Subject
+        const availableChapters = allChapters.filter(ch => {
+            const cleanGrade = grade ? grade.replace('th', '').trim().toLowerCase() : '';
+            const chGrade = ch.grade ? ch.grade.replace('th', '').trim().toLowerCase() : '';
+            return chGrade === cleanGrade && ch.subSubject.toLowerCase() === subject.toLowerCase();
+        });
+
+        if (availableChapters.length > 0 && !isLanguage) {
             // Show searchable chapter dropdown
             chapterSearch.style.display = 'block';
             chapterSearch.disabled = false;
@@ -230,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chapterSearch.value = '';
             manualChapterRow.style.display = 'none';
         } else {
-            // 9th grade or Languages — show manual entry
+            // No chapters found for combo or Languages — show manual entry
             chapterSearch.style.display = 'none';
             chapterResults.classList.remove('active');
             manualChapterRow.style.display = 'flex';
@@ -251,12 +237,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateChapterDropdown(chapters) {
         chapterResults.innerHTML = '';
         chapters.forEach(ch => {
-            const code = CHAPTER_CODES[ch] || 'MANUAL';
+            const code = ch.code || 'MANUAL';
             const div = document.createElement('div');
             div.className = 'dropdown-item';
-            div.innerHTML = `${ch} <span style="color:#00b894;font-size:0.8rem;margin-left:4px;">(${code})</span>`;
+            div.innerHTML = `${ch.name} <span style="color:#00b894;font-size:0.8rem;margin-left:4px;">(${code})</span>`;
             div.onclick = () => {
-                addChapterChip(ch, code);
+                addChapterChip(ch.name, code);
                 chapterSearch.value = '';
                 chapterResults.classList.remove('active');
             };
@@ -264,11 +250,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    chapterSearch.addEventListener('focus', () => {
+    function getAvailableChaptersForDropdown() {
         const subject = subjectSelect.value;
         const grade = document.querySelector('input[name="grade"]:checked')?.value;
-        if (grade === '10th' && SYLLABUS_10TH[subject]) {
-            const available = SYLLABUS_10TH[subject].filter(ch => !selectedChapters.find(s => s.name === ch));
+        const cleanGrade = grade ? grade.replace('th', '').trim().toLowerCase() : '';
+        
+        return allChapters.filter(ch => {
+            const chGrade = ch.grade ? ch.grade.replace('th', '').trim().toLowerCase() : '';
+            return chGrade === cleanGrade && 
+                   ch.subSubject.toLowerCase() === subject.toLowerCase() && 
+                   !selectedChapters.find(s => s.name === ch.name);
+        });
+    }
+
+    chapterSearch.addEventListener('focus', () => {
+        const available = getAvailableChaptersForDropdown();
+        if (available.length > 0) {
             populateChapterDropdown(available);
             chapterResults.classList.add('active');
         }
@@ -276,16 +273,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chapterSearch.addEventListener('input', () => {
         const query = chapterSearch.value.toLowerCase().trim();
-        const subject = subjectSelect.value;
-        const grade = document.querySelector('input[name="grade"]:checked')?.value;
         if (!query) { chapterResults.classList.remove('active'); return; }
-        if (grade === '10th' && SYLLABUS_10TH[subject]) {
-            const available = SYLLABUS_10TH[subject]
-                .filter(ch => !selectedChapters.find(s => s.name === ch))
-                .filter(ch => ch.toLowerCase().includes(query) || (CHAPTER_CODES[ch] || '').toLowerCase().includes(query));
-            populateChapterDropdown(available);
-            chapterResults.classList.add('active');
-        }
+        
+        const available = getAvailableChaptersForDropdown().filter(ch => 
+            ch.name.toLowerCase().includes(query) || ch.code.toLowerCase().includes(query)
+        );
+        populateChapterDropdown(available);
+        chapterResults.classList.add('active');
     });
 
     // Manual chapter entry (9th grade / Languages)
@@ -591,5 +585,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // INIT
     // =========================================================================
     fetchStudents();
+    fetchChapters();
     dateInput.valueAsDate = new Date();
 });
