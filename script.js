@@ -575,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = {
             // --- LECTURE LOG ---
             lecture_log: {
+                session_type: formData.get('session_type'),
                 date: formData.get('date'),
                 teacher_name: formData.get('teacher'),
                 branch: 'A',  // Hardcoded

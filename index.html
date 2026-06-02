@@ -23,10 +23,23 @@
                 
                 <div class="grid-row">
                     <div class="input-group">
+                        <label for="session_type">Session Type <span class="required">*</span></label>
+                        <select id="session_type" name="session_type" required>
+                            <option value="" disabled selected>Select Type</option>
+                            <option value="Lecture">Lecture</option>
+                            <option value="Doubt Solving">Doubt Solving</option>
+                            <option value="Practice Session">Practice Session</option>
+                            <option value="Revision Lecture">Revision Lecture</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
                         <label for="date">Date <span class="required">*</span></label>
                         <input type="date" id="date" name="date" required>
                     </div>
+                </div>
 
+                <div class="grid-row">
                     <div class="input-group">
                         <label for="teacher">Teacher Name <span class="required">*</span></label>
                         <select id="teacher" name="teacher" required>
