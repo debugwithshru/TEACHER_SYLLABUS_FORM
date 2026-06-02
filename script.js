@@ -96,12 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Hardcode column indices based on user's exact sheet structure
-            // 0: Student_ID, 1: First_Name, 2: Last_Name, ..., 6: Grade, 7: Batch
+            // 0: student_id, 1: first_name, 2: last_name, ..., 7: grade, 8: batch
             const idIdx = 0;
             const firstIdx = 1;
             const lastIdx = 2;
-            const gradeIdx = 6;
-            const batchIdx = 7;
+            const gradeIdx = 7;
+            const batchIdx = 8;
 
             const rows = data.table.rows;
             allStudents = rows.map(row => {
