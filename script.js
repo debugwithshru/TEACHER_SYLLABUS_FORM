@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // SUBJECT → SUB-SUBJECT MAPPING
     // =========================================================================
     const SUBJECT_TO_SUBSUBJECTS = {
-        "Mathematics": ["Algebra", "Geometry"],
+        "Maths": ["Algebra", "Geometry"],
         "Science": ["Physics", "Chemistry", "Biology"],
-        "Social Science": ["History", "Geography", "Political Science", "Economics"],
+        "SocSci": ["History", "Geography", "Political Science", "Economics"],
         "English": ["Literature", "Grammar", "Creative Writing"],
         "English Communicative": ["Literature", "Grammar", "Creative Writing"],
         "Hindi": ["Literature", "Grammar", "Creative Writing"],
@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const gradeIdx = 2;
+            const subjectIdx = 3;
             const subSubjectIdx = 4;
             const codeIdx = 6;
             const nameIdx = 7;
@@ -62,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!c || !c[nameIdx] || !c[nameIdx].v) return null;
                 return {
                     grade: (c[gradeIdx] && c[gradeIdx].v) ? String(c[gradeIdx].v).trim() : '',
+                    subject: (c[subjectIdx] && c[subjectIdx].v) ? String(c[subjectIdx].v).trim() : '',
                     subSubject: (c[subSubjectIdx] && c[subSubjectIdx].v) ? String(c[subSubjectIdx].v).trim() : '',
                     code: (c[codeIdx] && c[codeIdx].v) ? String(c[codeIdx].v).trim() : 'MANUAL',
                     name: String(c[nameIdx].v).trim()
@@ -243,7 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const availableChapters = allChapters.filter(ch => {
             const cleanGrade = grade ? grade.replace('th', '').trim().toLowerCase() : '';
             const chGrade = ch.grade ? ch.grade.replace('th', '').trim().toLowerCase() : '';
-            return chGrade === cleanGrade && ch.subSubject.toLowerCase() === subSubject.toLowerCase();
+            return chGrade === cleanGrade && 
+                   ch.subject.toLowerCase() === subject.toLowerCase() && 
+                   ch.subSubject.toLowerCase() === subSubject.toLowerCase();
         });
 
         if (availableChapters.length > 0) {
@@ -289,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getAvailableChaptersForDropdown() {
+        const subject = subjectSelect.value;
         const subSubject = subSubjectSelect.value;
         const grade = document.querySelector('input[name="grade"]:checked')?.value;
         const cleanGrade = grade ? grade.replace('th', '').trim().toLowerCase() : '';
@@ -296,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return allChapters.filter(ch => {
             const chGrade = ch.grade ? ch.grade.replace('th', '').trim().toLowerCase() : '';
             return chGrade === cleanGrade && 
+                   ch.subject.toLowerCase() === subject.toLowerCase() && 
                    ch.subSubject.toLowerCase() === subSubject.toLowerCase() && 
                    !selectedChapters.find(s => s.name === ch.name);
         });
