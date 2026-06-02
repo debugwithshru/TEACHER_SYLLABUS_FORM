@@ -220,7 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
             subSubjectGroup.style.display = 'none';
         }
         
-        // Reset sub-subject and chapters
+        // Reset chapter selections when main subject changes
+        selectedChapters = [];
+        chapterChipsEl.innerHTML = '';
+
+        // Reset sub-subject
         subSubjectSelect.value = '';
         subSubjectSelect.dispatchEvent(new Event('change'));
     });
@@ -229,10 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const subject = subjectSelect.value;
         const subSubject = subSubjectSelect.value;
         const grade = document.querySelector('input[name="grade"]:checked')?.value;
-
-        // Reset chapter selections
-        selectedChapters = [];
-        chapterChipsEl.innerHTML = '';
 
         if (!subSubject) {
             chapterSearch.style.display = 'none';
@@ -268,6 +268,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset chapter dropdown if grade changes (since chapters differ by grade)
     gradeRadios.forEach(r => r.addEventListener('change', () => {
+        // Reset chapter selections when grade changes
+        selectedChapters = [];
+        chapterChipsEl.innerHTML = '';
         if (subSubjectSelect.value) {
             subSubjectSelect.dispatchEvent(new Event('change'));
         }
