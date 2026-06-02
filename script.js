@@ -4,24 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
 
     // =========================================================================
-    // SUBJECT → PARENT SUBJECT MAPPING
-    // Teachers select what they call "Subject" (e.g., Algebra, Physics).
-    // We auto-derive the parent subject (Mathematics, Science, etc.) for the payload.
+    // SUBJECT → SUB-SUBJECT MAPPING
     // =========================================================================
-    const SUBJECT_TO_PARENT = {
-        "Algebra": "Mathematics",
-        "Geometry": "Mathematics",
-        "Physics": "Science",
-        "Chemistry": "Science",
-        "Biology": "Science",
-        "History": "Social Science",
-        "Geography": "Social Science",
-        "Political Science": "Social Science",
-        "Economics": "Social Science",
-        "English": "English",
-        "Hindi": "Language",
-        "Marathi": "Language",
-        "Sanskrit": "Language"
+    const SUBJECT_TO_SUBSUBJECTS = {
+        "Mathematics": ["Algebra", "Geometry"],
+        "Science": ["Physics", "Chemistry", "Biology"],
+        "Social Science": ["History", "Geography", "Political Science", "Economics"],
+        "English": ["Literature", "Grammar", "Creative Writing"],
+        "English Communicative": ["Literature", "Grammar", "Creative Writing"],
+        "Hindi": ["Literature", "Grammar", "Creative Writing"],
+        "Marathi": ["Literature", "Grammar", "Creative Writing"],
+        "Sanskrit": ["Literature", "Grammar", "Creative Writing"]
     };
 
     // =========================================================================
@@ -183,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI: CASCADING SUBJECT → CHAPTER
     // =========================================================================
     const subjectSelect = document.getElementById('subject');
+    const subSubjectGroup = document.getElementById('subSubjectGroup');
+    const subSubjectSelect = document.getElementById('sub_subject');
     const teacherSelect = document.getElementById('teacher');
     const chapterSearch = document.getElementById('chapter_search');
     const chapterResults = document.getElementById('chapter_search_results');
@@ -191,8 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const chapterChipsEl = document.getElementById('chapter_chips');
     const gradeRadios = document.getElementsByName('grade');
     const batchCheckboxes = document.querySelectorAll('input[name="batch"]');
-    const parentSubjectRow = document.getElementById('parentSubjectRow');
-    const parentSubjectDisplay = document.getElementById('parentSubjectDisplay');
     let selectedChapters = []; // [{name, code, hours}]
 
     // Auto-select batches for specific language teachers
@@ -209,27 +202,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     subjectSelect.addEventListener('change', () => {
         const subject = subjectSelect.value;
-        const grade = document.querySelector('input[name="grade"]:checked')?.value;
+        const subSubjects = SUBJECT_TO_SUBSUBJECTS[subject] || [];
+        
+        subSubjectSelect.innerHTML = '<option value="" disabled selected>Select Sub-Subject</option>';
+        subSubjects.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            subSubjectSelect.appendChild(opt);
+        });
+        
+        if (subSubjects.length > 0) {
+            subSubjectGroup.style.display = 'block';
+        } else {
+            subSubjectGroup.style.display = 'none';
+        }
+        
+        // Reset sub-subject and chapters
+        subSubjectSelect.value = '';
+        subSubjectSelect.dispatchEvent(new Event('change'));
+    });
 
-        // Show auto-derived parent subject
-        const parentSubject = SUBJECT_TO_PARENT[subject] || subject;
-        parentSubjectDisplay.textContent = parentSubject;
-        parentSubjectRow.style.display = 'flex';
+    subSubjectSelect.addEventListener('change', () => {
+        const subject = subjectSelect.value;
+        const subSubject = subSubjectSelect.value;
+        const grade = document.querySelector('input[name="grade"]:checked')?.value;
 
         // Reset chapter selections
         selectedChapters = [];
         chapterChipsEl.innerHTML = '';
 
-        const isLanguage = ["Hindi", "Marathi", "Sanskrit"].includes(subject);
+        if (!subSubject) {
+            chapterSearch.style.display = 'none';
+            chapterResults.classList.remove('active');
+            manualChapterRow.style.display = 'none';
+            return;
+        }
 
-        // Filter chapters dynamically based on Grade and Sub_Subject
+        // Filter chapters dynamically based on Grade, Subject, and Sub_Subject
         const availableChapters = allChapters.filter(ch => {
             const cleanGrade = grade ? grade.replace('th', '').trim().toLowerCase() : '';
             const chGrade = ch.grade ? ch.grade.replace('th', '').trim().toLowerCase() : '';
-            return chGrade === cleanGrade && ch.subSubject.toLowerCase() === subject.toLowerCase();
+            return chGrade === cleanGrade && ch.subSubject.toLowerCase() === subSubject.toLowerCase();
         });
 
-        if (availableChapters.length > 0 && !isLanguage) {
+        if (availableChapters.length > 0) {
             // Show searchable chapter dropdown
             chapterSearch.style.display = 'block';
             chapterSearch.disabled = false;
@@ -237,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chapterSearch.value = '';
             manualChapterRow.style.display = 'none';
         } else {
-            // No chapters found for combo or Languages — show manual entry
+            // No chapters found for combo — show manual entry
             chapterSearch.style.display = 'none';
             chapterResults.classList.remove('active');
             manualChapterRow.style.display = 'flex';
@@ -247,8 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset chapter dropdown if grade changes (since chapters differ by grade)
     gradeRadios.forEach(r => r.addEventListener('change', () => {
-        if (subjectSelect.value) {
-            subjectSelect.dispatchEvent(new Event('change'));
+        if (subSubjectSelect.value) {
+            subSubjectSelect.dispatchEvent(new Event('change'));
         }
     }));
 
@@ -272,14 +289,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getAvailableChaptersForDropdown() {
-        const subject = subjectSelect.value;
+        const subSubject = subSubjectSelect.value;
         const grade = document.querySelector('input[name="grade"]:checked')?.value;
         const cleanGrade = grade ? grade.replace('th', '').trim().toLowerCase() : '';
         
         return allChapters.filter(ch => {
             const chGrade = ch.grade ? ch.grade.replace('th', '').trim().toLowerCase() : '';
             return chGrade === cleanGrade && 
-                   ch.subSubject.toLowerCase() === subject.toLowerCase() && 
+                   ch.subSubject.toLowerCase() === subSubject.toLowerCase() && 
                    !selectedChapters.find(s => s.name === ch.name);
         });
     }
@@ -502,8 +519,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent = 'Submitting...';
 
         const formData = new FormData(form);
-        const selectedSubject = formData.get('subject');        // What teacher selected (e.g., "Algebra")
-        const parentSubject = SUBJECT_TO_PARENT[selectedSubject] || selectedSubject;  // Auto-derived (e.g., "Mathematics")
+        const selectedSubject = formData.get('subject');
+        const selectedSubSubject = formData.get('sub_subject');
 
         // Validate batches
         const selectedBatches = Array.from(document.querySelectorAll('input[name="batch"]:checked')).map(cb => cb.value);
@@ -557,8 +574,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 branch: 'A',  // Hardcoded
                 grade: formData.get('grade'),
                 batch: selectedBatches.join(', '),
-                subject: parentSubject,
-                sub_subject: selectedSubject,
+                subject: selectedSubject,
+                sub_subject: selectedSubSubject,
                 hours_this_session: parseFloat(formData.get('hours')),
                 chapters: selectedChapters.map(ch => ({
                     chapter_name: ch.name,

@@ -80,34 +80,21 @@
                         <label for="subject">Subject <span class="required">*</span></label>
                         <select id="subject" name="subject" required>
                             <option value="" disabled selected>Select Subject</option>
-                            <!-- Mathematics -->
-                            <optgroup label="Mathematics">
-                                <option value="Algebra">Algebra</option>
-                                <option value="Geometry">Geometry</option>
-                            </optgroup>
-                            <!-- Science -->
-                            <optgroup label="Science">
-                                <option value="Physics">Physics</option>
-                                <option value="Chemistry">Chemistry</option>
-                                <option value="Biology">Biology</option>
-                            </optgroup>
-                            <!-- Social Science -->
-                            <optgroup label="Social Science">
-                                <option value="History">History</option>
-                                <option value="Geography">Geography</option>
-                                <option value="Political Science">Political Science</option>
-                                <option value="Economics">Economics</option>
-                            </optgroup>
-                            <!-- English -->
-                            <optgroup label="English">
-                                <option value="English">English</option>
-                            </optgroup>
-                            <!-- Languages -->
-                            <optgroup label="Languages">
-                                <option value="Hindi">Hindi</option>
-                                <option value="Marathi">Marathi</option>
-                                <option value="Sanskrit">Sanskrit</option>
-                            </optgroup>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Science">Science</option>
+                            <option value="Social Science">Social Science</option>
+                            <option value="English">English</option>
+                            <option value="English Communicative">English Communicative</option>
+                            <option value="Hindi">Hindi</option>
+                            <option value="Marathi">Marathi</option>
+                            <option value="Sanskrit">Sanskrit</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" id="subSubjectGroup" style="display: none; margin-top: 15px;">
+                        <label for="sub_subject">Sub-Subject <span class="required">*</span></label>
+                        <select id="sub_subject" name="sub_subject" required>
+                            <option value="" disabled selected>Select Sub-Subject</option>
                         </select>
                     </div>
 
@@ -125,11 +112,7 @@
                     </div>
                 </div>
 
-                <!-- Auto-derived parent subject (read-only display) -->
-                <div class="auto-fill-row" id="parentSubjectRow" style="display: none;">
-                    <span class="auto-fill-label">📚 Parent Subject:</span>
-                    <span class="auto-fill-value" id="parentSubjectDisplay"></span>
-                </div>
+
 
                 <div class="input-group" style="margin-top: 15px;">
                     <label for="topics">Topics Covered <span class="required">*</span></label>
