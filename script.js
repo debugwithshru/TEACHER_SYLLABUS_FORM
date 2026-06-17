@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('syllabusForm');
     const dateInput = document.getElementById('date');
     const submitBtn = document.getElementById('submitBtn');
@@ -356,11 +356,11 @@
             chip.innerHTML = `
                 <span class="chapter-chip-name">${ch.name}</span>
                 <span class="chapter-chip-code">${ch.code}</span>
-                <input type="number" class="chapter-hours-input" min="0.5" step="0.5" placeholder="Hrs" value="${ch.hours || ''}">
+                <input type="text" class="chapter-hours-input" placeholder="Hrs" value="${ch.hours || ''}">
                 <span class="remove-chip">&times;</span>
             `;
             chip.querySelector('.chapter-hours-input').addEventListener('input', (e) => {
-                selectedChapters[idx].hours = parseFloat(e.target.value) || 0;
+                selectedChapters[idx].hours = e.target.value;
             });
             chip.querySelector('.remove-chip').addEventListener('click', () => {
                 selectedChapters = selectedChapters.filter(c => c.name !== ch.name);
@@ -548,11 +548,35 @@
             return;
         }
 
-        const totalSessionHours = parseFloat(formData.get('hours'));
-        const chaptersTotalHours = selectedChapters.reduce((sum, ch) => sum + (ch.hours || 0), 0);
+        const parseHoursInput = (val) => {
+            if (!val) return 0;
+            const str = String(val).trim();
+            if (str.includes(',')) {
+                const parts = str.split(',');
+                const h = parseInt(parts[0]) || 0;
+                const m = parseInt(parts[1]) || 0;
+                return h + (m / 60);
+            }
+            return parseFloat(str) || 0;
+        };
 
-        if (totalSessionHours !== chaptersTotalHours) {
-            alert(`Validation Error: Total Session Hours (${totalSessionHours}) must match the sum of individual chapter hours (${chaptersTotalHours}).`);
+        const formatHoursPayload = (val) => {
+            if (!val) return '';
+            const str = String(val).trim();
+            if (str.includes(',')) {
+                const parts = str.split(',');
+                const h = parts[0] || '0';
+                const m = parts[1] || '0';
+                return `${h}H${m}M`;
+            }
+            return isNaN(str) || str === '' ? str : parseFloat(str);
+        };
+
+        const totalSessionHoursParsed = parseHoursInput(formData.get('hours'));
+        const chaptersTotalHoursParsed = selectedChapters.reduce((sum, ch) => sum + parseHoursInput(ch.hours), 0);
+
+        if (Math.abs(totalSessionHoursParsed - chaptersTotalHoursParsed) > 0.01) {
+            alert(`Validation Error: Total Session Hours must match the sum of individual chapter hours.`);
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit Session Log';
             return;
@@ -586,11 +610,11 @@
                 batch: selectedBatches.join(', '),
                 subject: selectedSubject,
                 sub_subject: selectedSubSubject,
-                hours_this_session: parseFloat(formData.get('hours')),
+                hours_this_session: formatHoursPayload(formData.get('hours')),
                 chapters: selectedChapters.map(ch => ({
                     chapter_name: ch.name,
                     chapter_code: ch.code,
-                    hours: ch.hours || 0
+                    hours: formatHoursPayload(ch.hours)
                 })),
                 chapter_code_string: selectedChapters.map(ch => ch.code).join(', '),
                 chapter_name_string: selectedChapters.map(ch => ch.name).join(', '),
