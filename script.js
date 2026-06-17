@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('syllabusForm');
     const dateInput = document.getElementById('date');
     const submitBtn = document.getElementById('submitBtn');
@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('=== FINAL PAYLOAD ===');
         console.log(JSON.stringify(payload, null, 2));
 
-        const WEBHOOK_URL = 'https://n8n.srv1498466.hstgr.cloud/webhook/299c736b-d744-4af7-a8b1-3e5ee3bc9ca4';
+        const WEBHOOK_URL = 'https://n8n.srv1761768.hstgr.cloud/webhook/299c736b-d744-4af7-a8b1-3e5ee3bc9ca4';
 
         try {
             await fetch(WEBHOOK_URL, {
